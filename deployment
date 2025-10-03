@@ -31,6 +31,10 @@
       "type": "string",
       "defaultValue": "Auo+20250923",
       "metadata": { "description": "管理員密碼" }
+    },
+    "osDiskResourceId": {
+      "type": "string",
+      "metadata": {"description": "原本的OS硬碟ID"}
     }
   },
   "resources": [
@@ -93,11 +97,12 @@
           "adminPassword": "[parameters('adminPassword')]"
         },
         "storageProfile": {
-          "imageReference": {
-            "publisher": "MicrosoftWindowsServer",
-            "offer": "WindowsServer",
-            "sku": "2019-Datacenter",
-            "version": "latest"
+          "osDisk": {
+            "createOption": "Attach",
+              "managedDisk": {
+                "id": "[parameters('osDiskResourceId')]"
+              }
+            } 
           },
           "osDisk": {
             "createOption": "FromImage"
@@ -111,7 +116,6 @@
           ]
         }
       }
-    }
   ],
   "outputs": {
     "vmId": {
