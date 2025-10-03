@@ -22,6 +22,13 @@
       "metadata": {
         "description": "要设置的新主机名"
       }
+    },
+    "vmSize": {
+      "type": "string",
+      "defaultValue": "Standard_D2s_v3",
+      "metadata": {
+        "description": "虚拟机规格，例如 Standard_D2s_v3"
+      }
     }
   },
   "resources": [
@@ -31,9 +38,13 @@
       "name": "[parameters('vmName')]",
       "location": "[resourceGroup().location]",
       "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('vmSize')]"
+        },
         "osProfile": {
           "computerName": "[parameters('newHostName')]"
         }
+        // 其他配置，如 storageProfile、networkProfile 根据需要补充
       }
     }
   ],
