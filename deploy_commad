@@ -1,0 +1,13 @@
+New-AzResourceGroupDeployment `
+  -ResourceGroupName $resourceGroup `
+  -TemplateFile $templateFile `
+  -Name $deploymentName `
+  -Verbose `
+  -web `
+  -vmName $vmName `
+  -resourceGroup $resourceGroup `
+  -vmSize $vmSize `
+  -adminUsername $adminUsername `
+  -adminPassword $adminPassword `
+  -osDiskResourceId $osDiskId `
+  -newHostName $newHostName
