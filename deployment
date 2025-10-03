@@ -24,7 +24,7 @@
     },
     "adminUsername": {
       "type": "string",
-      "defaultValue": "DBA01@davidlinauo.onmicrosoft.com",
+      "defaultValue": "adminuser",  // 建議用簡單帳號
       "metadata": { "description": "管理員帳號" }
     },
     "adminPassword": {
@@ -34,7 +34,7 @@
     },
     "osDiskResourceId": {
       "type": "string",
-      "metadata": {"description": "原本的OS硬碟ID"}
+      "metadata": { "description": "原本的OS硬碟ID" }
     }
   },
   "resources": [
@@ -45,7 +45,7 @@
       "location": "[resourceGroup().location]",
       "properties": {
         "addressSpace": {
-          "addressPrefixes": ["10.0.0.0/16"]
+          "addressPrefixes": [ "10.0.0.0/16" ]
         },
         "subnets": [
           {
@@ -99,13 +99,9 @@
         "storageProfile": {
           "osDisk": {
             "createOption": "Attach",
-              "managedDisk": {
-                "id": "[parameters('osDiskResourceId')]"
-              }
-            } 
-          },
-          "osDisk": {
-            "createOption": "FromImage"
+            "managedDisk": {
+              "id": "[parameters('osDiskResourceId')]"
+            }
           }
         },
         "networkProfile": {
@@ -116,6 +112,7 @@
           ]
         }
       }
+    }
   ],
   "outputs": {
     "vmId": {
