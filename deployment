@@ -4,7 +4,7 @@
   "parameters": {
     "vmName": {
       "type": "string",
-      "defaultValue": "michaeltest",
+      "defaultValue": "michaeltest2",
       "metadata": { "description": "虛擬機名稱" }
     },
     "resourceGroup": {
@@ -14,7 +14,7 @@
     },
     "newHostName": {
       "type": "string",
-      "defaultValue": "changesuccess",
+      "defaultValue": "michaeltest2",
       "metadata": { "description": "新主機名稱" }
     },
     "vmSize": {
@@ -24,12 +24,12 @@
     },
     "adminUsername": {
       "type": "string",
-      "defaultValue": "azureuser",
+      "defaultValue": "DBA01@davidlinauo.onmicrosoft.com",
       "metadata": { "description": "管理員帳號" }
     },
     "adminPassword": {
       "type": "string",
-      "defaultValue": "P@ssw0rd1234!",
+      "defaultValue": "Auo+20250923",
       "metadata": { "description": "管理員密碼" }
     }
   },
