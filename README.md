@@ -4,54 +4,159 @@
   "parameters": {
     "vmName": {
       "type": "string",
-      "defaultValue": "michaeltest",
+      "defaultValue": "windowsVM",
       "metadata": {
-        "description": "要修改hostname的虚拟机名称"
+        "description": "虛擬機名稱"
       }
     },
     "resourceGroup": {
       "type": "string",
       "defaultValue": "test_A",
       "metadata": {
-        "description": "虚拟机所在的资源组"
+        "description": "資源所在資源組"
       }
     },
     "newHostName": {
       "type": "string",
-      "defaultValue": "changesuccess",
+      "defaultValue": "windowsHost",
       "metadata": {
-        "description": "要设置的新主机名"
+        "description": "設定的新主機名"
       }
     },
     "vmSize": {
       "type": "string",
       "defaultValue": "Standard_D2s_v3",
       "metadata": {
-        "description": "虚拟机规格，例如 Standard_D2s_v3"
+        "description": "虛擬機規格"
+      }
+    },
+    "adminUsername": {
+      "type": "string",
+      "defaultValue": "azureuser",
+      "metadata": {
+        "description": "管理帳號名稱"
+      }
+    },
+    "adminPassword": {
+      "type": "string",
+      "defaultValue": "P@ssw0rd1234!",
+      "metadata": {
+        "description": "管理帳號密碼"
       }
     }
   },
+  "variables": {
+    "nicName": "[concat(parameters('vmName'), '-nic')]",
+    "vnetName": "myVnet",
+    "subnetName": "default",
+    "ipName": "[concat(parameters('vmName'), '-pip')]",
+    "addressPrefix": "10.0.0.0/16",
+    "subnetPrefix": "10.0.0.0/24"
+  },
   "resources": [
+    // 虛擬網路
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2021-02-01",
+      "name": "[variables('vnetName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [ "[variables('addressPrefix')]" ]
+        },
+        "subnets": [
+          {
+            "name": "[variables('subnetName')]",
+            "properties": {
+              "addressPrefix": "[variables('subnetPrefix')]"
+            }
+          }
+        ]
+      }
+    },
+    // 公網IP
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2021-02-01",
+      "name": "[variables('ipName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic"
+      }
+    },
+    // NIC
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2021-02-01",
+      "name": "[variables('nicName')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', variables('ipName'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "subnet": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnetName'))]"
+              },
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('ipName'))]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    // Windows虛擬機
     {
       "type": "Microsoft.Compute/virtualMachines",
       "apiVersion": "2022-08-01",
       "name": "[parameters('vmName')]",
       "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
+      ],
       "properties": {
         "hardwareProfile": {
           "vmSize": "[parameters('vmSize')]"
         },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2022-Datacenter",
+            "version": "latest"
+          },
+          "osDisk": {
+            "createOption": "FromImage"
+          }
+        },
         "osProfile": {
-          "computerName": "[parameters('newHostName')]"
+          "computerName": "[parameters('newHostName')]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
+            }
+          ]
         }
-        // 其他配置，如 storageProfile、networkProfile 根据需要补充
       }
     }
   ],
   "outputs": {
+    "vmPublicIp": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', variables('ipName'))).ipAddress]"
+    },
     "status": {
       "type": "string",
-      "value": "虚拟机 hostname 已更新。请确保虚拟机在重启后生效。"
+      "value": "Windows虛擬機已建立完成。"
     }
   }
 }
