@@ -18,7 +18,7 @@
     },
     "newHostName": {
       "type": "string",
-      "defaultValue": "windowsHost",
+      "defaultValue": "changebytm",
       "metadata": {
         "description": "設定的新主機名"
       }
@@ -32,14 +32,14 @@
     },
     "adminUsername": {
       "type": "string",
-      "defaultValue": "azureuser",
+      "defaultValue": "auoMichel",
       "metadata": {
         "description": "管理帳號名稱"
       }
     },
     "adminPassword": {
       "type": "string",
-      "defaultValue": "P@ssw0rd1234!",
+      "defaultValue": "AuoMichael",
       "metadata": {
         "description": "管理帳號密碼"
       }
