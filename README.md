@@ -38,7 +38,7 @@
             }
         },
         "adminPassword": {
-            "defaultValue": "MichaelYHTsai41687",
+            "defaultValue": "P@ss0rd!2025",
             "type": "String",
             "metadata": {
                 "description": "管理帳號密碼"
