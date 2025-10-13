@@ -180,33 +180,30 @@
                     ]
                 }
             }
-        }
-    ],
-    "resources": 
-    [
+        },
         {
-          "type": "extensions",
-          "name": "SetupIIS",
-          "apiVersion": "2015-06-15",
-          "location": "[resourceGroup().location]",
-          "dependsOn": 
-          [
+            "type": "extensions",
+            "name": "SetupIIS",
+            "apiVersion": "2015-06-15",
+            "location": "[resourceGroup().location]",
+            "dependsOn": 
+            [
             "[resourceId('Microsoft.Compute/virtualMachines', variables('vmName'))]"
-          ],
-          "properties": 
-          {
-            "publisher": "Microsoft.Powershell",
-            "type": "DSC",
-            "typeHandlerVersion": "2.19",
-            "autoUpgradeMinorVersion": true,
-            "settings": 
+            ],
+            "properties": 
             {
-              "ConfigurationFunction": "WindowsWebServer.ps1\\WindowsWebServer",
-              "ModulesUrl": "[concat('https://raw.githubusercontent.com/mikepfeiffer/iis-webdeploy/master', '/DSC/WindowsWebServer.zip')]",
-              "Properties":{}
+                "publisher": "Microsoft.Powershell",
+                "type": "DSC",
+                "typeHandlerVersion": "2.19",
+                "autoUpgradeMinorVersion": true,
+                "settings": 
+                {
+                    "ConfigurationFunction": "WindowsWebServer.ps1\\WindowsWebServer",
+                    "ModulesUrl": "[concat('https://raw.githubusercontent.com/mikepfeiffer/iis-webdeploy/master', '/DSC/WindowsWebServer.zip')]",
+                    "Properties":{}
+                }
             }
-          }
-        }
+        }  
     ],
     "outputs": 
     {
