@@ -1,51 +1,65 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json",
     "contentVersion": "1.0.0.0",
-    "parameters": {
-        "vmName": {
+    "parameters": 
+    {
+        "vmName": 
+        {
             "defaultValue": "windowsVM",
             "type": "String",
-            "metadata": {
+            "metadata": 
+            {
                 "description": "虛擬機名稱"
             }
         },
-        "resourceGroup": {
+        "resourceGroup": 
+        {
             "defaultValue": "test_A",
             "type": "String",
-            "metadata": {
+            "metadata":
+            {
                 "description": "資源所在資源組"
             }
         },
-        "newHostName": {
+        "newHostName": 
+        {
             "defaultValue": "changebytm",
             "type": "String",
-            "metadata": {
+            "metadata": 
+            {
                 "description": "設定的新主機名"
             }
         },
-        "vmSize": {
+        "vmSize": 
+        {
             "defaultValue": "Standard_D2s_v3",
             "type": "String",
-            "metadata": {
+            "metadata": 
+            {
                 "description": "虛擬機規格"
             }
         },
-        "adminUsername": {
+        "adminUsername": 
+        {
             "defaultValue": "auoMichel",
             "type": "String",
-            "metadata": {
+            "metadata": 
+            {
                 "description": "管理帳號名稱"
             }
         },
-        "adminPassword": {
+        "adminPassword": 
+        {
             "defaultValue": "P@ss0rd!2025",
             "type": "String",
-            "metadata": {
+            "metadata": 
+            {
                 "description": "管理帳號密碼"
             }
         }
     },
-    "variables": {
+    "variables": 
+    {
         "nicName": "[concat(parameters('vmName'), '-nic')]",
         "vnetName": "myVnet",
         "subnetName": "default",
@@ -59,16 +73,21 @@
             "apiVersion": "2021-02-01",
             "name": "[variables('vnetName')]",
             "location": "[resourceGroup().location]",
-            "properties": {
-                "addressSpace": {
-                    "addressPrefixes": [
+            "properties":
+            {
+                "addressSpace": 
+                {
+                    "addressPrefixes": 
+                    [
                         "[variables('addressPrefix')]"
                     ]
                 },
-                "subnets": [
+                "subnets": 
+                [
                     {
                         "name": "[variables('subnetName')]",
-                        "properties": {
+                        "properties": 
+                        {
                             "addressPrefix": "[variables('subnetPrefix')]"
                         }
                     }
@@ -80,7 +99,8 @@
             "apiVersion": "2021-02-01",
             "name": "[variables('ipName')]",
             "location": "[resourceGroup().location]",
-            "properties": {
+            "properties": 
+            {
                 "publicIPAllocationMethod": "Dynamic"
             }
         },
@@ -89,19 +109,25 @@
             "apiVersion": "2021-02-01",
             "name": "[variables('nicName')]",
             "location": "[resourceGroup().location]",
-            "dependsOn": [
+            "dependsOn": 
+            [
                 "[resourceId('Microsoft.Network/publicIPAddresses', variables('ipName'))]",
                 "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]"
             ],
-            "properties": {
-                "ipConfigurations": [
+            "properties":
+            {
+                "ipConfigurations": 
+                [
                     {
                         "name": "ipconfig1",
-                        "properties": {
-                            "subnet": {
+                        "properties":
+                        {
+                            "subnet": 
+                            {
                                 "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnetName'))]"
                             },
-                            "publicIPAddress": {
+                            "publicIPAddress": 
+                            {
                                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('ipName'))]"
                             }
                         }
@@ -114,45 +140,80 @@
             "apiVersion": "2022-08-01",
             "name": "[parameters('vmName')]",
             "location": "[resourceGroup().location]",
-            "dependsOn": [
+            "dependsOn": 
+            [
                 "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
             ],
-            "properties": {
-                "hardwareProfile": {
+            "properties": 
+            {
+                "hardwareProfile": 
+                {
                     "vmSize": "[parameters('vmSize')]"
                 },
-                "storageProfile": {
-                    "imageReference": {
+                "storageProfile": 
+                {
+                    "imageReference": 
+                    {
                         "publisher": "MicrosoftWindowsServer",
                         "offer": "WindowsServer",
                         "sku": "2022-Datacenter",
                         "version": "latest"
                     },
-                    "osDisk": {
+                    "osDisk": 
+                    {
                         "createOption": "FromImage"
                     }
                 },
-                "osProfile": {
+                "osProfile": 
+                {
                     "computerName": "[parameters('newHostName')]",
                     "adminUsername": "[parameters('adminUsername')]",
                     "adminPassword": "[parameters('adminPassword')]"
                 },
-                "networkProfile": {
-                    "networkInterfaces": [
+                "networkProfile": 
+                {
+                    "networkInterfaces": 
+                    [
                         {
                             "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
                         }
                     ]
                 }
             }
-        }
+        },
+        {
+            "type": "extensions",
+            "name": "SetupIIS",
+            "apiVersion": "2015-06-15",
+            "location": "[resourceGroup().location]",
+            "dependsOn": 
+            [
+            "[resourceId('Microsoft.Compute/virtualMachines', variables('vmName'))]"
+            ],
+            "properties": 
+            {
+                "publisher": "Microsoft.Powershell",
+                "type": "DSC",
+                "typeHandlerVersion": "2.19",
+                "autoUpgradeMinorVersion": true,
+                "settings": 
+                {
+                    "ConfigurationFunction": "WindowsWebServer.ps1\\WindowsWebServer",
+                    "ModulesUrl": "[concat('https://raw.githubusercontent.com/mikepfeiffer/iis-webdeploy/master', '/DSC/WindowsWebServer.zip')]",
+                    "Properties":{}
+                }
+            }
+        }  
     ],
-    "outputs": {
-        "vmPublicIp": {
+    "outputs": 
+    {
+        "vmPublicIp": 
+        {
             "type": "String",
             "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', variables('ipName'))).ipAddress]"
         },
-        "status": {
+        "status": 
+        {
             "type": "String",
             "value": "Windows虛擬機已建立完成。"
         }
