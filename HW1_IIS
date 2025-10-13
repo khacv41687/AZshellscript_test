@@ -1,222 +1,183 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json",
-    "contentVersion": "1.0.0.0",
-    "parameters": 
-    {
-        "vmName": 
-        {
-            "defaultValue": "windowsVM",
-            "type": "String",
-            "metadata": 
-            {
-                "description": "虛擬機名稱"
-            }
-        },
-        "resourceGroup": 
-        {
-            "defaultValue": "test_A",
-            "type": "String",
-            "metadata":
-            {
-                "description": "資源所在資源組"
-            }
-        },
-        "newHostName": 
-        {
-            "defaultValue": "changebytm",
-            "type": "String",
-            "metadata": 
-            {
-                "description": "設定的新主機名"
-            }
-        },
-        "vmSize": 
-        {
-            "defaultValue": "Standard_D2s_v3",
-            "type": "String",
-            "metadata": 
-            {
-                "description": "虛擬機規格"
-            }
-        },
-        "adminUsername": 
-        {
-            "defaultValue": "auoMichel",
-            "type": "String",
-            "metadata": 
-            {
-                "description": "管理帳號名稱"
-            }
-        },
-        "adminPassword": 
-        {
-            "defaultValue": "P@ss0rd!2025",
-            "type": "String",
-            "metadata": 
-            {
-                "description": "管理帳號密碼"
-            }
-        }
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmName": {
+      "defaultValue": "windowsVM",
+      "type": "String",
+      "metadata": {
+        "description": "虛擬機名稱"
+      }
     },
-    "variables": 
-    {
-        "vmName": "[parameters('vmName')]",
-        "nicName": "[concat(parameters('vmName'), '-nic')]",
-        "vnetName": "myVnet",
-        "subnetName": "default",
-        "ipName": "[concat(parameters('vmName'), '-pip')]",
-        "addressPrefix": "10.0.0.0/16",
-        "subnetPrefix": "10.0.0.0/24"
+    "resourceGroup": {
+      "defaultValue": "test_A",
+      "type": "String",
+      "metadata": {
+        "description": "資源所在資源組"
+      }
     },
-    "resources": [
-        {
-            "type": "Microsoft.Network/virtualNetworks",
-            "apiVersion": "2021-02-01",
-            "name": "[variables('vnetName')]",
-            "location": "[resourceGroup().location]",
-            "properties":
-            {
-                "addressSpace": 
-                {
-                    "addressPrefixes": 
-                    [
-                        "[variables('addressPrefix')]"
-                    ]
-                },
-                "subnets": 
-                [
-                    {
-                        "name": "[variables('subnetName')]",
-                        "properties": 
-                        {
-                            "addressPrefix": "[variables('subnetPrefix')]"
-                        }
-                    }
-                ]
-            }
-        },
-        {
-            "type": "Microsoft.Network/publicIPAddresses",
-            "apiVersion": "2021-02-01",
-            "name": "[variables('ipName')]",
-            "location": "[resourceGroup().location]",
-            "properties": 
-            {
-                "publicIPAllocationMethod": "Dynamic"
-            }
-        },
-        {
-            "type": "Microsoft.Network/networkInterfaces",
-            "apiVersion": "2021-02-01",
-            "name": "[variables('nicName')]",
-            "location": "[resourceGroup().location]",
-            "dependsOn": 
-            [
-                "[resourceId('Microsoft.Network/publicIPAddresses', variables('ipName'))]",
-                "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]"
-            ],
-            "properties":
-            {
-                "ipConfigurations": 
-                [
-                    {
-                        "name": "ipconfig1",
-                        "properties":
-                        {
-                            "subnet": 
-                            {
-                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnetName'))]"
-                            },
-                            "publicIPAddress": 
-                            {
-                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('ipName'))]"
-                            }
-                        }
-                    }
-                ]
-            }
-        },
-        {
-            "type": "Microsoft.Compute/virtualMachines",
-            "apiVersion": "2022-08-01",
-            "name": "[parameters('vmName')]",
-            "location": "[resourceGroup().location]",
-            "dependsOn": 
-            [
-                "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
-            ],
-            "properties": 
-            {
-                "hardwareProfile": 
-                {
-                    "vmSize": "[parameters('vmSize')]"
-                },
-                "storageProfile": 
-                {
-                    "imageReference": 
-                    {
-                        "publisher": "MicrosoftWindowsServer",
-                        "offer": "WindowsServer",
-                        "sku": "2022-Datacenter",
-                        "version": "latest"
-                    },
-                    "osDisk": 
-                    {
-                        "createOption": "FromImage"
-                    }
-                },
-                "osProfile": 
-                {
-                    "computerName": "[parameters('newHostName')]",
-                    "adminUsername": "[parameters('adminUsername')]",
-                    "adminPassword": "[parameters('adminPassword')]"
-                },
-                "networkProfile": 
-                {
-                    "networkInterfaces": 
-                    [
-                        {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
-                        }
-                    ]
-                }
-            }
-        },
-        {
-            "type": "extensions",
-            "name": "SetupIIS",
-            "apiVersion": "2015-06-15",
-            "location": "[resourceGroup().location]",
-            "dependsOn": 
-            [
-            "[resourceId('Microsoft.Compute/virtualMachines', variables('vmName'))]"
-            ],
-            "properties": 
-            {
-                "publisher": "Microsoft.Powershell",
-                "type": "DSC",
-                "typeHandlerVersion": "2.19",
-                "autoUpgradeMinorVersion": true,
-                "settings": 
-                {
-                    "ConfigurationFunction": "WindowsWebServer.ps1\\WindowsWebServer",
-                    "ModulesUrl": "[concat('https://raw.githubusercontent.com/mikepfeiffer/iis-webdeploy/master', '/DSC/WindowsWebServer.zip')]",
-                    "Properties":{}
-                }
-            }
-        }  
-    ],
-    "outputs": 
-    {
-        "vmPublicIp": 
-        {
-            "type": "String",
-            "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', variables('ipName'))).ipAddress]"
-        },
-        "status": 
-        {
-            "type": "String",
-            "value": "Windows虛擬機已建立完成。"
-        }
+    "newHostName": {
+      "defaultValue": "changebytm",
+      "type": "String",
+      "metadata": {
+        "description": "設定的新主機名"
+      }
+    },
+    "vmSize": {
+      "defaultValue": "Standard_D2s_v3",
+      "type": "String",
+      "metadata": {
+        "description": "虛擬機規格"
+      }
+    },
+    "adminUsername": {
+      "defaultValue": "auoMichel",
+      "type": "String",
+      "metadata": {
+        "description": "管理帳號名稱"
+      }
+    },
+    "adminPassword": {
+      "defaultValue": "P@ss0rd!2025",
+      "type": "String",
+      "metadata": {
+        "description": "管理帳號密碼"
+      }
     }
+  },
+  "variables": {
+    "nicName": "[concat(parameters('vmName'), '-nic')]",
+    "vnetName": "myVnet",
+    "subnetName": "default",
+    "ipName": "[concat(parameters('vmName'), '-pip')]",
+    "addressPrefix": "10.0.0.0/16",
+    "subnetPrefix": "10.0.0.0/24"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2021-02-01",
+      "name": "[variables('vnetName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[variables('addressPrefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[variables('subnetName')]",
+            "properties": {
+              "addressPrefix": "[variables('subnetPrefix')]"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2021-02-01",
+      "name": "[variables('ipName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic"
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2021-02-01",
+      "name": "[variables('nicName')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', variables('ipName'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "subnet": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnetName'))]"
+              },
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('ipName'))]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2022-08-01",
+      "name": "[parameters('vmName')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('vmSize')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2022-Datacenter",
+            "version": "latest"
+          },
+          "osDisk": {
+            "createOption": "FromImage"
+          }
+        },
+        "osProfile": {
+          "computerName": "[parameters('newHostName')]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
+            }
+          ]
+        }
+      },
+      "resources": [
+        {
+          "type": "Microsoft.Compute/virtualMachines/extensions",
+          "name": "[concat(parameters('vmName'), '/', 'SetupIIS')]",
+          "apiVersion": "2021-02-01",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
+          ],
+          "properties": {
+            "publisher": "Microsoft.Powershell",
+            "type": "DSC",
+            "typeHandlerVersion": "2.19",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "ConfigurationFunction": "WindowsWebServer.ps1\\WindowsWebServer",
+              "ModulesUrl": "[concat('https://raw.githubusercontent.com/mikepfeiffer/iis-webdeploy/master', '/DSC/WindowsWebServer.zip')]",
+              "Properties": {}
+            },
+            "protectedSettings": {}
+          }
+        }
+      ]
+    }
+  ],
+  "outputs": {
+    "vmPublicIp": {
+      "type": "String",
+      "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', variables('ipName'))).ipAddress]"
+    },
+    "status": {
+      "type": "String",
+      "value": "Windows虛擬機已建立完成。"
+    }
+  }
 }
