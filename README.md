@@ -28,11 +28,11 @@ Azure vm 的properties中的 computer name顯示為changebytm
 
 <img width="1100" height="684" alt="image" src="https://github.com/user-attachments/assets/f1d9fdf7-18ce-4c28-9abb-2b2f76264ed1" />
 
-### click "Create"
+### 6.click "Create"
 
 <img width="1076" height="777" alt="image" src="https://github.com/user-attachments/assets/6c9ee5c6-3a89-4a5d-91fc-9f34fb464714" />
 
-### Deploy will take about ten to fifteen minutes
+### 7.Deploy will take about ten to fifteen minutes
 
 <img width="731" height="417" alt="step7" src="https://github.com/user-attachments/assets/8f6ae8b5-af19-4dca-b212-4bfa29add139" />
 
