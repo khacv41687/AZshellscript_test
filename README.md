@@ -7,7 +7,7 @@ Azure vm 的properties中的 computer name顯示為changebytm
 
 ## 其餘檔案為當初做錯所試錯的內容可以跳過
 
-# 1.azure portal 選擇 Deploy a coustom template
+### 1.azure portal 選擇 Deploy a coustom template
 
 <img width="576" height="385" alt="deployment_vm" src="https://github.com/user-attachments/assets/78e3f526-c7d7-4915-a1bd-8be54e924685" />
 
