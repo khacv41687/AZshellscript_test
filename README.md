@@ -1,4 +1,4 @@
-# HW1_Template 
+<img width="1857" height="786" alt="image" src="https://github.com/user-attachments/assets/d032a02f-0c98-47b4-b72e-e7269ae24d10" /># HW1_Template 
 為第一個作業的code，在parameters中設置了一個newHostName為changebytm，
 Azure vm 的properties中的 computer name顯示為changebytm
 
@@ -35,6 +35,16 @@ Azure vm 的properties中的 computer name顯示為changebytm
 ### 7. Deploy will take about ten to fifteen minutes
 
 <img width="731" height="417" alt="step7" src="https://github.com/user-attachments/assets/8f6ae8b5-af19-4dca-b212-4bfa29add139" />
+
+### 8. After Deploy the VM, Click your VM
+
+<img width="1857" height="786" alt="image" src="https://github.com/user-attachments/assets/0868b367-ecc7-4f43-a520-e8596beb37d2" />
+
+### 9. Find ip and paste to url 
+
+<img width="1431" height="576" alt="image" src="https://github.com/user-attachments/assets/49e1a10a-5646-49e1-a3a7-dac4bf3b6c07" />
+
+
 
 
 
