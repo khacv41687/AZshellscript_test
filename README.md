@@ -45,6 +45,11 @@ Azure vm 的properties中的 computer name顯示為changebytm
 
 <img width="714" height="322" alt="step9" src="https://github.com/user-attachments/assets/d557a3f3-6503-4b88-b578-24330b6a00e0" />
 
+### 10. If you see the following screen picture, then you success
+
+<img width="1543" height="898" alt="image" src="https://github.com/user-attachments/assets/0de4fc49-0824-428e-b8db-8dc454638ca1" />
+
+
 
 
 
