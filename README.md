@@ -38,11 +38,13 @@ Azure vm 的properties中的 computer name顯示為changebytm
 
 ### 8. After Deploy the VM, Click your VM
 
-<img width="1857" height="786" alt="image" src="https://github.com/user-attachments/assets/0868b367-ecc7-4f43-a520-e8596beb37d2" />
+<img width="714" height="360" alt="step8" src="https://github.com/user-attachments/assets/d0a13ee7-30e1-4676-8e25-c1493f6f8ced" />
+
 
 ### 9. Find ip and paste to url 
 
-<img width="1431" height="576" alt="image" src="https://github.com/user-attachments/assets/49e1a10a-5646-49e1-a3a7-dac4bf3b6c07" />
+<img width="714" height="322" alt="step9" src="https://github.com/user-attachments/assets/d557a3f3-6503-4b88-b578-24330b6a00e0" />
+
 
 
 
