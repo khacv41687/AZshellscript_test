@@ -169,15 +169,5 @@
         }
       ]
     }
-  ],
-  "outputs": {
-    "vmPublicIp": {
-      "type": "String",
-      "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', variables('ipName'))).ipAddress]"
-    },
-    "status": {
-      "type": "String",
-      "value": "Windows虛擬機已建立完成。"
-    }
-  }
+  ]
 }
