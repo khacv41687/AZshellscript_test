@@ -161,7 +161,7 @@
             "autoUpgradeMinorVersion": true,
             "settings": {
               "ConfigurationFunction": "WindowsWebServer.ps1\\WindowsWebServer",
-              "ModulesUrl": "[concat('https://raw.githubusercontent.com/mikepfeiffer/iis-webdeploy/master', '/DSC/WindowsWebServer.zip')]",
+              "ModulesUrl": "[concat('https://raw.githubusercontent.com/khacv41687/AZshellscript_test/main/WindowsWebServer.zip')]",
               "Properties": {}
             },
             "protectedSettings": {}
