@@ -55,6 +55,7 @@ Azure vm 的properties中的 computer name顯示為changebytm
 <img width="1051" height="565" alt="image" src="https://github.com/user-attachments/assets/6dd5da19-da9c-4664-bb36-61fd339614e0" />
 
 
+<img width="1490" height="443" alt="image" src="https://github.com/user-attachments/assets/a905fcee-631d-457b-8e50-5dffcabed6cb" />
 
 
 
