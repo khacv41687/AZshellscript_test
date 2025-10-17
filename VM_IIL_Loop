@@ -1,189 +1,188 @@
 {
-	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json",
-	"contentVersion": "1.0.0.0",
-	"parameters": {
-		"vmName": {
-			"defaultValue": [
-				"augazap05",
-				"augazap06",
-				"augazap07",
-				"augazap08"
-			],
-			"type": "array",
-			"metadata": {
-				"description": "\u865b\u64ec\u6a5f\u540d\u7a31\u6e05\u55ae"
-			}
-		},
-		"resourceGroup": {
-			"defaultValue": "test_A",
-			"type": "String",
-			"metadata": {
-				"description": "\u8cc7\u6e90\u6240\u5728\u8cc7\u6e90\u7d44"
-			}
-		},
-		"newHostName": {
-			"defaultValue": "changebytm",
-			"type": "String",
-			"metadata": {
-				"description": "\u8a2d\u5b9a\u7684\u65b0\u4e3b\u6a5f\u540d"
-			}
-		},
-		"vmSize": {
-			"defaultValue": "Standard_D2s_v3",
-			"type": "String",
-			"metadata": {
-				"description": "\u865b\u64ec\u6a5f\u898f\u683c"
-			}
-		},
-		"adminUsername": {
-			"defaultValue": "azadmin",
-			"type": "String",
-			"metadata": {
-				"description": "\u7ba1\u7406\u5e33\u865f\u540d\u7a31"
-			}
-		},
-		"adminPassword": {
-			"defaultValue": "@2AzureDBA025",
-			"type": "String",
-			"metadata": {
-				"description": "\u7ba1\u7406\u5e33\u865f\u5bc6\u78bc"
-			}
-		}
-	},
-	"variables": {
-		"vnetName": "myVnet",
-		"subnetName": "default",
-		"addressPrefix": "10.0.0.0/16",
-		"subnetPrefix": "10.0.0.0/24"
-	},
-	"resources": [
-		{
-			"type": "Microsoft.Network/virtualNetworks",
-			"apiVersion": "2021-02-01",
-			"name": "[variables('vnetName')]",
-			"location": "[resourceGroup().location]",
-			"properties": {
-				"addressSpace": {
-					"addressPrefixes": [
-						"[variables('addressPrefix')]"
-					]
-				},
-				"subnets": [
-					{
-						"name": "[variables('subnetName')]",
-						"properties": {
-							"addressPrefix": "[variables('subnetPrefix')]"
-						}
-					}
-				]
-			}
-		},
-		{
-			"type": "Microsoft.Network/publicIPAddresses",
-			"apiVersion": "2021-02-01",
-			"name": "[concat(parameters('vmName')[copyIndex()], '-pip')]",
-			"location": "[resourceGroup().location]",
-			"copy": {
-				"name": "publicIPCopy",
-				"count": "[length(parameters('vmName'))]"
-			},
-			"properties": {
-				"publicIPAllocationMethod": "Dynamic"
-			}
-		},
-		{
-			"type": "Microsoft.Network/networkInterfaces",
-			"apiVersion": "2021-02-01",
-			"name": "[concat(parameters('vmName')[copyIndex()], '-nic')]",
-			"location": "[resourceGroup().location]",
-			"copy": {
-				"name": "nicCopy",
-				"count": "[length(parameters('vmName'))]"
-			},
-			"dependsOn": [
-				"[resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('vmName')[copyIndex()], '-pip'))]",
-				"[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]"
-			],
-			"properties": {
-				"ipConfigurations": [
-					{
-						"name": "ipconfig1",
-						"properties": {
-							"subnet": {
-								"id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnetName'))]"
-							},
-							"publicIPAddress": {
-								"id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('vmName')[copyIndex()], '-pip'))]"
-							}
-						}
-					}
-				]
-			}
-		},
-		{
-			"type": "Microsoft.Compute/virtualMachines",
-			"apiVersion": "2022-08-01",
-			"name": "[parameters('vmName')[copyIndex()]]",
-			"location": "[resourceGroup().location]",
-			"copy": {
-				"name": "vmCopy",
-				"count": "[length(parameters('vmName'))]"
-			},
-			"dependsOn": [
-				"[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('vmName')[copyIndex()], '-nic'))]"
-			],
-			"properties": {
-				"hardwareProfile": {
-					"vmSize": "[parameters('vmSize')]"
-				},
-				"storageProfile": {
-					"imageReference": {
-						"publisher": "MicrosoftWindowsServer",
-						"offer": "WindowsServer",
-						"sku": "2022-Datacenter",
-						"version": "latest"
-					},
-					"osDisk": {
-						"createOption": "FromImage"
-					}
-				},
-				"osProfile": {
-					"computerName": "[parameters('newHostName')]",
-					"adminUsername": "[parameters('adminUsername')]",
-					"adminPassword": "[parameters('adminPassword')]"
-				},
-				"networkProfile": {
-					"networkInterfaces": [
-						{
-							"id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('vmName')[copyIndex()], '-nic'))]"
-						}
-					]
-				}
-			},
-			"resources": [
-				{
-					"type": "Microsoft.Compute/virtualMachines/extensions",
-					"name": "[concat(parameters('vmName')[copyIndex()], '/', 'SetupIIS')]",
-					"apiVersion": "2015-05-01-preview",
-					"location": "[resourceGroup().location]",
-					"dependsOn": [
-						"[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName')[copyIndex()])]"
-					],
-					"properties": {
-						"publisher": "Microsoft.Powershell",
-						"type": "DSC",
-						"typeHandlerVersion": "2.19",
-						"autoUpgradeMinorVersion": true,
-						"settings": {
-							"ConfigurationFunction": "WindowsWebServer.ps1\\WindowsWebServer",
-							"ModulesUrl": "https://testforrbac.blob.core.windows.net/test/WindowsWebServer.zip",
-							"Properties": {}
-						},
-						"protectedSettings": {}
-					}
-				}
-			]
-		}
-	]
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmName": {
+      "defaultValue": [
+        "augazap05",
+        "augazap06",
+        "augazap07",
+        "augazap08"
+      ],
+      "type": "array",
+      "metadata": {
+        "description": "list of vm name"
+      }
+    },
+    "resourceGroup": {
+      "defaultValue": "test_A",
+      "type": "String",
+      "metadata": {
+        "description": "資源所在資源組"
+      }
+    },
+    "newHostName": {
+      "defaultValue": "changebytm",
+      "type": "String",
+      "metadata": {
+        "description": "設定的新主機名"
+      }
+    },
+    "vmSize": {
+      "defaultValue": "Standard_D4s_v3",
+      "type": "String",
+      "metadata": {
+        "description": "虛擬機規格"
+      }
+    },
+    "adminUsername": {
+      "defaultValue": "azadmin",
+      "type": "String",
+      "metadata": {
+        "description": "管理帳號名稱"
+      }
+    },
+    "adminPassword": {
+      "defaultValue": "@2AzureDBA025",
+      "type": "String",
+      "metadata": {
+        "description": "管理帳號密碼"
+      }
+    }
+  },
+  "variables": {
+    "vnetName": "myVnet",
+    "subnetName": "default"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2021-02-01",
+      "name": "[concat(parameters('vmName')[copyIndex()], '-pip')]",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "publicIPCopy",
+        "count": "[length(parameters('vmName'))]"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic"
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2021-02-01",
+      "name": "[concat(parameters('vmName')[copyIndex()], '-nsg')]",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "nsgCopy",
+        "count": "[length(parameters('vmName'))]"
+      },
+      "properties": {
+        "securityRules": []
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2023-05-01",
+      "name": "[concat(parameters('vmName')[copyIndex()], '-nic')]",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "nicCopy",
+        "count": "[length(parameters('vmName'))]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('vmName')[copyIndex()], '-pip'))]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', concat(parameters('vmName')[copyIndex()], '-nsg'))]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "subnet": {
+                "id": "/subscriptions/51dc40a1-0cd0-42d7-96ae-57f68edb26fb/resourceGroups/Network/providers/Microsoft.Network/virtualNetworks/AZSG-ShareServiceVNet/subnets/subnet_ShareService_ServerFarm"
+              },
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('vmName')[copyIndex()], '-pip'))]"
+              },
+              "privateIPAllocationMethod": "Dynamic",
+              "primary": true
+            }
+          }
+        ],
+        "enableAcceleratedNetworking": true,
+        "networkSecurityGroup": {
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(parameters('vmName')[copyIndex()], '-nsg'))]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2022-08-01",
+      "name": "[parameters('vmName')[copyIndex()]]",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "vmCopy",
+        "count": "[length(parameters('vmName'))]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('vmName')[copyIndex()], '-nic'))]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('vmSize')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2022-Datacenter",
+            "version": "latest"
+          },
+          "osDisk": {
+            "createOption": "FromImage",
+            "diskSizeGb": 127,
+            "managedDisk": {
+              "storageAccountType": "StandardSSD_LRS"
+            }
+          }
+        },
+        "osProfile": {
+          "computerName": "[parameters('newHostName')]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('vmName')[copyIndex()], '-nic'))]"
+            }
+          ]
+        }
+      },
+      "resources": [
+        {
+          "type": "Microsoft.Compute/virtualMachines/extensions",
+          "name": "[concat(parameters('vmName')[copyIndex()], '/', 'SetupIIS')]",
+          "apiVersion": "2015-05-01-preview",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName')[copyIndex()])]"
+          ],
+          "properties": {
+            "publisher": "Microsoft.Powershell",
+            "type": "DSC",
+            "typeHandlerVersion": "2.19",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "ConfigurationFunction": "WindowsWebServer.ps1\\WindowsWebServer",
+              "ModulesUrl": "https://testforrbac.blob.core.windows.net/test/WindowsWebServer.zip",
+              "Properties": {}
+            },
+            "protectedSettings": {}
+          }
+        }
+      ]
+    }
+  ]
 }
-
