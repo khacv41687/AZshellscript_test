@@ -148,11 +148,11 @@
       "resources": [
         {
           "type": "Microsoft.Compute/virtualMachines/extensions",
-          "name": "[concat(parameters('vmName')[copyIndex()], '/', 'SetupIIS')]",
+          "name": "[concat(parameters('vmName'), '/', 'SetupIIS')]",
           "apiVersion": "2015-05-01-preview",
           "location": "[resourceGroup().location]",
           "dependsOn": [
-            "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName')[copyIndex()])]"
+            "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
           ],
           "properties": {
             "publisher": "Microsoft.Powershell",
