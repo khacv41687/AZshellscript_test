@@ -152,7 +152,7 @@
           "apiVersion": "2015-05-01-preview",
           "location": "[resourceGroup().location]",
           "dependsOn": [
-            "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
+            "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName')[copyIndex()])]"
           ],
           "properties": {
             "publisher": "Microsoft.Powershell",
