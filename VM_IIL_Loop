@@ -1,4 +1,4 @@
-{
+nf{
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json",
   "contentVersion": "1.0.0.0",
   "parameters": {
@@ -69,19 +69,6 @@
       }
     },
     {
-      "type": "Microsoft.Network/networkSecurityGroups",
-      "apiVersion": "2021-02-01",
-      "name": "[concat(parameters('vmName')[copyIndex()], '-nsg')]",
-      "location": "[resourceGroup().location]",
-      "copy": {
-        "name": "nsgCopy",
-        "count": "[length(parameters('vmName'))]"
-      },
-      "properties": {
-        "securityRules": []
-      }
-    },
-    {
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2023-05-01",
       "name": "[concat(parameters('vmName')[copyIndex()], '-nic')]",
@@ -91,8 +78,7 @@
         "count": "[length(parameters('vmName'))]"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('vmName')[copyIndex()], '-pip'))]",
-        "[resourceId('Microsoft.Network/networkSecurityGroups', concat(parameters('vmName')[copyIndex()], '-nsg'))]"
+        "[resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('vmName')[copyIndex()], '-pip'))]"
       ],
       "properties": {
         "ipConfigurations": [
@@ -110,11 +96,7 @@
             }
           }
         ],
-        "enableAcceleratedNetworking": true,
-        "networkSecurityGroup": {
-          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(parameters('vmName')[copyIndex()], '-nsg'))]"
-        }
-      }
+        "enableAcceleratedNetworking": true
     },
     {
       "type": "Microsoft.Compute/virtualMachines",
@@ -175,7 +157,7 @@
             "typeHandlerVersion": "2.19",
             "autoUpgradeMinorVersion": true,
             "settings": {
-              "ConfigurationFunction": "WindowsWebServer.ps1\\WindowsWebServer",
+              "ConfigurationFunction": "WindowsWebServer.ps1 (2)\\WindowsWebServer",
               "ModulesUrl": "https://installationfile.blob.core.windows.net/file1/WindowsWebServer.zip",
               "Properties": {}
             },
