@@ -65,7 +65,7 @@ Configuration WindowsWebServer
             GetScript = { @{ Result = "RewriteInstall" } }
             TestScript = { Test-Path "\\10.225.10.7\software\rewrite_amd64_en-US.msi" }
             SetScript = {
-                Start-Process msiexec.exe -ArgumentList '/i "https://testforrbac.blob.core.windows.net/test/rewrite_amd64_en-US.msi" /quiet /norestart' -Wait
+                Start-Process msiexec.exe -ArgumentList '/i "https://installationfile.blob.core.windows.net/file1/rewrite_amd64_en-US.msi" /quiet /norestart' -Wait
             }
             DependsOn = "[WindowsFeature]Web-Server"
         }
