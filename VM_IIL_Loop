@@ -176,7 +176,7 @@
             "autoUpgradeMinorVersion": true,
             "settings": {
               "ConfigurationFunction": "WindowsWebServer.ps1\\WindowsWebServer",
-              "ModulesUrl": "https://testforrbac.blob.core.windows.net/test/WindowsWebServer.zip",
+              "ModulesUrl": "https://installationfile.blob.core.windows.net/file1/WindowsWebServer.zip",
               "Properties": {}
             },
             "protectedSettings": {}
